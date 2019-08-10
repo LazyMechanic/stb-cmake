@@ -26,11 +26,6 @@ set(
 # ############################################################### #
 # Create interface target ####################################### #
 # ############################################################### #
-
-file(
-    GLOB stb_HEADERS
-    "${CMAKE_CURRENT_SOURCE_DIR}/stb/*.h")
-
 add_library(
     stb
     INTERFACE)
@@ -44,28 +39,34 @@ target_include_directories(
     INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
               $<INSTALL_INTERFACE:include>)
 
+# ############################################################### #
+# Create vorbis header ########################################## #
+# ############################################################### #
+
 # Create vorbis header
 file(READ ${CMAKE_CURRENT_SOURCE_DIR}/stb/stb_vorbis.c STB_VORBIS_CONTENT)
 configure_file(
     "${CMAKE_CURRENT_SOURCE_DIR}/cmake/stb_vorbis.h.in" 
-    "${PROJECT_BINARY_DIR}/stb_vorbis.h")
+    "${CMAKE_CURRENT_SOURCE_DIR}/stb/stb_vorbis.h")
 
 # ############################################################### #
 # Installing #################################################### #
 # ############################################################### #
 
 if(stb_INSTALL)
+    file(
+        GLOB stb_HEADERS
+        "${CMAKE_CURRENT_SOURCE_DIR}/stb/*.h")
+
+    # Install headers
+    install(
+        FILES       ${stb_HEADERS}
+        DESTINATION ${stb_INSTALL_INCLUDE_PREFIX})
+
     # Create export targets
     install(
         TARGETS stb
         EXPORT  stb-targets)
-
-    # Install headers
-    install(
-        FILES       
-            ${stb_HEADERS}
-            "${PROJECT_BINARY_DIR}/stb_vorbis.h"
-        DESTINATION ${stb_INSTALL_INCLUDE_PREFIX})
 
     set(stb-targets_FILE "stb-targets.cmake")
 
